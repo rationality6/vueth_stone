@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Card Game</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- development version, includes helpful console warnings -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+      .flip-container {
+          -webkit-perspective: 1000;
+          -moz-perspective: 1000;
+          -o-perspective: 1000;
+          perspective: 1000;
+          min-height: 120px;
+          cursor: pointer;
+      }
+
+      .front,
+      .back {
+          -webkit-backface-visibility: hidden;
+          -moz-backface-visibility: hidden;
+          -o-backface-visibility: hidden;
+          backface-visibility: hidden;
+          -webkit-transition: 0.6s;
+          -webkit-transform-style: preserve-3d;
+          -moz-transition: 0.6s;
+          -moz-transform-style: preserve-3d;
+          -o-transition: 0.6s;
+          -o-transform-style: preserve-3d;
+          -ms-transition: 0.6s;
+          -ms-transform-style: preserve-3d;
+          transition: 0.6s;
+          transform-style: preserve-3d;
+          top: 0;
+          left: 0;
+          width: 100%;
+      }
+
+      .back {
+          -webkit-transform: rotateY(-180deg);
+          -moz-transform: rotateY(-180deg);
+          -o-transform: rotateY(-180deg);
+          -ms-transform: rotateY(-180deg);
+          transform: rotateY(-180deg);
+          position: absolute;
+      }
+
+      .center {
+          display: flex;
+          justify-content: center;
+      }
+
+      .flip-container.flipped .back {
+          -webkit-transform: rotateY(0deg);
+          -moz-transform: rotateY(0deg);
+          -o-transform: rotateY(0deg);
+          -ms-transform: rotateY(0deg);
+          transform: rotateY(0deg);
+      }
+
+      .flip-container.flipped .front {
+          -webkit-transform: rotateY(180deg);
+          -moz-transform: rotateY(180deg);
+          -o-transform: rotateY(180deg);
+          -ms-transform: rotateY(180deg);
+          transform: rotateY(180deg);
+      }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="row">
+    <div class="col-md-6 col-lg-6 col-xl-5 mx-auto">
+      <div class="row justify-content-md-center">
+
+        <div v-for="card in memoryCards"
+             class="col-auto mb-3 flip-container"
+             :class="{ 'flipped': card.isFlipped }"
+             @click="flipCard(card)">
+          <div class="memorycard">
+            <div class="front border shadow">
+              <img width="100"
+                   height="150"
+                   src="https://static.wikia.nocookie.net/hearthstone/images/c/c4/Card_back-Default.png/revision/latest?cb=20140823204025">
+            </div>
+            <div class="back border center">
+              <img width="100" height="150" style='object-fit: cover; object-position: center;'
+                   :src=card.img>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let app = new Vue({
+    el: '#app',
+    data: {
+      cards: [
+        {
+          name: '더러운 마귀',
+          img: 'https://d15f34w2p8l1cc.cloudfront.net/hearthstone/0a826ec07c8b24491e5ca3d70c6b686385aa57d03e98d14c1e6ee32ab92267da.png',
+        },
+        {
+          name: '붉은 인장대 전력',
+          img: 'https://d15f34w2p8l1cc.cloudfront.net/hearthstone/2576f0abea8954bcd92b7a27fa7f59f6c707790dd4dac3924e73424a1a6c9c32.png',
+        },
+        {
+          name: '분노',
+          img: 'https://d15f34w2p8l1cc.cloudfront.net/hearthstone/9f01cf24205b5042bbbc2cfecac36632885c622af604448757d3a2b34efeae96.png',
+        },
+        {
+          name: 'Final Showdown',
+          img: 'https://d15f34w2p8l1cc.cloudfront.net/hearthstone/afb187e27fa169474df87c4d40a4634b2922032fc04443c3377ae73094d52bf0.png',
+        },
+      ],
+      memoryCards: []
+    },
+    created () {
+      this.cards.forEach((card) => {
+        Vue.set(card, 'isFlipped', false)
+      });
+
+      var cards1 = _.cloneDeep(this.cards);
+      var cards2 = _.cloneDeep(this.cards);
+
+      this.memoryCards = _.shuffle(this.memoryCards.concat(cards1, cards2));
+    },
+
+    methods: {
+      flipCard (card) {
+        card.isFlipped = true;
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
