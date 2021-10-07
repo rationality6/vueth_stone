@@ -11,6 +11,13 @@
   <!-- development version, includes helpful console warnings -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <style>
+      .flex{
+          display: flex;
+      }
+      .justify-center{
+          justify-content: center;
+      }
+
       .flip-container {
           -webkit-perspective: 1000;
           -moz-perspective: 1000;
@@ -79,7 +86,21 @@
 <body>
 
 <div id="app">
+  <div class="d-flex flex-row justify-content-center py-3">
+    <div class="turns p-3">
+      <span class="btn btn-info">Turns : <span class="badge"
+                                               :class="finish ? 'badge-success' : 'badge-light'">{{turns}}</span>
+      </span>
+    </div>
+    <div class="totalTime p-3">
+      <span class="btn btn-info">Total Time : <span class="badge"
+                                                    :class="finish ? 'badge-success' : 'badge-light'">{{totalTime.minutes}} : {{totalTime.seconds}}</span>
+      </span>
+
+    </div>
+  </div>
   <div class="row">
+
     <div class="col-md-6 col-lg-6 col-xl-5 mx-auto">
       <div class="row justify-content-md-center">
 
@@ -102,6 +123,11 @@
       </div>
     </div>
   </div>
+
+  <div class="totalTime p-3 flex justify-center">
+    <button class="btn btn-info" @click="reset" :disabled="!start">Restart</button>
+  </div>
+
 </div>
 
 <script>
@@ -135,6 +161,7 @@
         minutes: 0,
         seconds: 0,
       },
+
     },
     created () {
       this.cards.forEach((card) => {
@@ -153,7 +180,7 @@
         if (card.isMatched || card.isFlipped || this.flippedCards.length === 2)
           return;
 
-        if(!this.start){
+        if (!this.start) {
           this._startGame();
         }
 
@@ -173,7 +200,8 @@
             this.flippedCards = [];
 
             //All cards matched ?
-            if(this.memoryCards.every(card => card.isMatched === true)){
+            if (this.memoryCards.every(card => card.isMatched === true)) {
+              clearInterval(this.interval);
               this.finish = true;
             }
 
@@ -188,20 +216,41 @@
           }, 800);
         }
       },
-      _startGame(){
+      _startGame () {
         this._tick();
-        this.interval = setInterval(this._tick,1000);
+        this.interval = setInterval(this._tick, 1000);
         this.start = true;
       },
 
-      _tick(){
-        if(this.totalTime.seconds !== 59){
+      _tick () {
+        if (this.totalTime.seconds !== 59) {
           this.totalTime.seconds++;
           return
         }
 
         this.totalTime.minutes++;
         this.totalTime.seconds = 0;
+      },
+      reset(){
+        clearInterval(this.interval);
+
+        this.cards.forEach((card) => {
+          Vue.set(card, 'isFlipped',false);
+          Vue.set(card, 'isMatched',false);
+        });
+
+        setTimeout(() => {
+          this.memoryCards = [];
+          this.memoryCards = _.shuffle(this.memoryCards.concat(_.cloneDeep(this.cards), _.cloneDeep(this.cards)));
+          this.totalTime.minutes = 0;
+          this.totalTime.seconds = 0;
+          this.start = false;
+          this.finish = false;
+          this.turns = 0;
+          this.flippedCards = [];
+
+        }, 600);
+
       },
 
     }
