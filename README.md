@@ -6,3 +6,6 @@ memory card game written in Vue.js
 
 
 <img width="722" alt="Screen Shot 2021-10-07 at 5 48 51 PM" src="https://user-images.githubusercontent.com/3889468/136351593-6babbc12-4c37-492b-9192-63435e0f692c.png">
+
+
+<img width="1025" alt="Screen Shot 2021-10-07 at 6 08 06 PM" src="https://user-images.githubusercontent.com/3889468/136354859-adb79106-d569-4c2e-8f62-4dc8b0e720b9.png">
