@@ -70,6 +70,10 @@
           -ms-transform: rotateY(180deg);
           transform: rotateY(180deg);
       }
+
+      .matched {
+          opacity: 0.3;
+      }
   </style>
 </head>
 <body>
@@ -81,7 +85,7 @@
 
         <div v-for="card in memoryCards"
              class="col-auto mb-3 flip-container"
-             :class="{ 'flipped': card.isFlipped }"
+             :class="{ 'flipped': card.isFlipped, 'matched' : card.isMatched }"
              @click="flipCard(card)">
           <div class="memorycard">
             <div class="front border shadow">
@@ -122,7 +126,15 @@
           img: 'https://d15f34w2p8l1cc.cloudfront.net/hearthstone/afb187e27fa169474df87c4d40a4634b2922032fc04443c3377ae73094d52bf0.png',
         },
       ],
-      memoryCards: []
+      memoryCards: [],
+      flippedCards: [],
+      finish: false,
+      start: false,
+      turns: 0,
+      totalTime: {
+        minutes: 0,
+        seconds: 0,
+      },
     },
     created () {
       this.cards.forEach((card) => {
@@ -137,8 +149,61 @@
 
     methods: {
       flipCard (card) {
+
+        if (card.isMatched || card.isFlipped || this.flippedCards.length === 2)
+          return;
+
+        if(!this.start){
+          this._startGame();
+        }
+
         card.isFlipped = true;
-      }
+
+        if (this.flippedCards.length < 2)
+          this.flippedCards.push(card);
+        if (this.flippedCards.length === 2)
+          this._match(card);
+      },
+
+      _match (card) {
+        this.turns++;
+        if (this.flippedCards[0].name === this.flippedCards[1].name) {
+          setTimeout(() => {
+            this.flippedCards.forEach(card => card.isMatched = true);
+            this.flippedCards = [];
+
+            //All cards matched ?
+            if(this.memoryCards.every(card => card.isMatched === true)){
+              this.finish = true;
+            }
+
+          }, 400);
+
+        } else {
+          setTimeout(() => {
+            this.flippedCards.forEach((card) => {
+              card.isFlipped = false
+            });
+            this.flippedCards = [];
+          }, 800);
+        }
+      },
+      _startGame(){
+        this._tick();
+        this.interval = setInterval(this._tick,1000);
+        this.start = true;
+      },
+
+      _tick(){
+        if(this.totalTime.seconds !== 59){
+          this.totalTime.seconds++;
+          return
+        }
+
+        this.totalTime.minutes++;
+        this.totalTime.seconds = 0;
+      },
+
     }
   });
 </script>
